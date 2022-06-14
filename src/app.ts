@@ -1,9 +1,13 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import exerciesRouter from './routes/exercises';
+import workoutsRouter from './routes/workouts';
+import errorHandler from './middlewares/errorHandler';
+import { Data } from './controllers/exercises';
+import throwError from './utils/throwError';
+import setsRouter from './routes/sets';
 
-const app= express();
+const app = express();
 
 /* ------------------------------- Middlewares ------------------------------ */
 // setting up body parser middleware
@@ -11,87 +15,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.json({messsage: 'Everything is good so far'});
-});
-
-app.get('/workouts', async (req, res) => {
+/* --------------------------------- Routes --------------------------------- */
+app.get('/', async (req:Request, res:Response<Data>, next:NextFunction) => {
     try {
-        const allWorkouts = await prisma.workout.findMany({
-            include: { exercises: true },
-        });
-        res.json(allWorkouts);
+        throwError({code: 400, error: 'Bad request - should be handled by errorHandler middlewareare'});
+        // res.status(400).json({ code: 400, error: 'Bad Request' });
+        // res.json({ messsage: 'Everything is good so far' });
     } catch (err) {
-        console.error({ err });
-    }finally{
-      prisma.$disconnect();
+        next(err);
     }
 });
 
-app.post('/workout', async (req, res) => {
-    try {
-        const { workoutName } = req.body;
-        if (workoutName) {
-            const workout = await prisma.workout.create({data: {name: workoutName}});
-            console.log({workout});
-            return res.json({ workout });
-        }
-        res.json({});
-    } catch (err) {
-        console.error({ err });
-    } finally {
-        prisma.$disconnect();
-    }
-});
+app.use(exerciesRouter);
+app.use(workoutsRouter);
+app.use(setsRouter);
 
+/* ------------------------------- Middleware ------------------------------- */
+app.use(errorHandler);
 
-app.get('/workout/:id', async (req, res) => {
-    try {
-      const {id} = req.params;
-      if(id){
-        const workout = await prisma.workout.findUnique({where:{id},include:{exercises: true}});
-        res.json(workout);
-      }
-    } catch (err) {
-        console.error({ err });
-    }finally{
-      prisma.$disconnect();
-    }
-});
-
-app.get('/exercises', async (req, res) => {
-    try {
-        const allExercises = await prisma.exercise.findMany();
-        res.json(allExercises);
-    } catch (err) {
-        console.error({ err });
-    } finally {
-        prisma.$disconnect();
-    }
-});
-
-app.post('/exercise', async (req, res) => {
-    try {
-        const {name, workoutId} = req.body;
-        if (name && workoutId) {
-            const exercise = await prisma.exercise.create({
-                data: {name},
-            });
-
-            const workout = await prisma.workout.update({
-                where: { id: workoutId },
-                data: { exercises: { connect: { id: exercise.id } } },
-            });
-
-            return res.json({workout});
-        }
-        return res.json({ message: 'Excercise name not found' });
-    } catch (err) {
-        console.error({ err });
-    } finally {
-        prisma.$disconnect();
-    }
-});
-
-
-app.listen(8000, () => console.log('yoo go to http://localhost:3000'));
+app.listen(8000, () => console.log('yoo go to http://localhost:8000'));

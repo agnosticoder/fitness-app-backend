@@ -23,6 +23,7 @@
   "dependencies": {
     "@prisma/client": "^3.11.1",
     "cors": "^2.8.5",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "zod": "^3.17.3"
   }
 }

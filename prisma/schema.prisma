@@ -10,37 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Set {
+  id         String   @id @default(uuid())
+  reps       String?
+  weight     String?
+  setOrder   String?
+  isDone     Boolean  @default(false)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exerciseId String
+}
+
 model Exercise {
-  id       String    @id @default(uuid())
-  name     String
-  reps     Int       @default(0)
-  setOrder Int       @default(0)
-  weight   Int       @default(0)
-  isDone   Boolean   @default(false)
-  workouts Workout[] @relation(name: "workout", references: [id])
+  id        String  @id @default(uuid())
+  name      String
+  sets       Set[]
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId String
 }
 
 model Workout {
   id        String     @id @default(uuid())
   name      String
-  exercises Exercise[] @relation(name: "workout")
+  exercises Exercise[]
 }
-
-// model User {
-//   id       Int    @id @default(autoincrement())
-//   name     String
-//   email    String @unique
-//   password String
-//   Post     Post[]
-//   likes    Post[] @relation(name: "likes", references: [id])
-// }
-
-// model Post {
-//   id        Int     @id @default(autoincrement())
-//   content   String
-//   createdAt String
-//   isDone    Boolean @default(false)
-//   author    User    @relation(fields: [autherId], references: [id])
-//   autherId  Int
-//   likedBy   User[]  @relation(name: "likes", references: [id])
-// }
