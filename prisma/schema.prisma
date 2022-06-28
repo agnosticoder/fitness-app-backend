@@ -16,20 +16,29 @@ model Set {
   weight     String?
   setOrder   String?
   isDone     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId String
 }
 
 model Exercise {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  sets       Set[]
-  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutId String
+  sets      Set[]
 }
 
 model Workout {
-  id        String     @id @default(uuid())
-  name      String
-  exercises Exercise[]
+  id         String     @id @default(uuid())
+  name       String
+  isDone     Boolean    @default(false)
+  isTemplate Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  exercises  Exercise[]
 }
