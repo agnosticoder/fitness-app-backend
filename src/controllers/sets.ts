@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { Data } from './exercises';
-import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/getPrismaClient';
+import { Data } from '../lib/interfaces/IData';
 
 const CreatSetBody = z.object({
     exerciseId: z.string(),
+    reps: z.string().optional(),
+    weight: z.string().optional(),
 });
 
 export const createSet = async (
@@ -15,7 +15,7 @@ export const createSet = async (
     next: NextFunction
 ) => {
     try {
-        const { exerciseId } = CreatSetBody.parse(req.body);
+        const { exerciseId, reps, weight } = CreatSetBody.parse(req.body);
         console.log('createSet', exerciseId);
 
         const exercise = await prisma.exercise.update({
@@ -23,7 +23,10 @@ export const createSet = async (
                 id: exerciseId,
             },
             data: {
-                sets: { create: {} },
+                sets: { create: {
+                    reps,
+                    weight,
+                } },
             },
         });
 
@@ -33,9 +36,7 @@ export const createSet = async (
     } catch (err) {
         console.log('createSet error: ', err);
         next(err);
-    } finally {
-        prisma.$disconnect();
-    }
+    } 
 };
 
 const DeleteSetBody = z.object({
@@ -61,9 +62,7 @@ export const deleteSet = async (
     } catch (err) {
         console.log('deleteSet error: ', err);
         next(err);
-    } finally {
-        prisma.$disconnect();
-    }
+    } 
 };
 
 const UpdateSetBody = z.object({
@@ -105,7 +104,5 @@ export const updateSet = async (
     } catch (err) {
         console.log('updateSet error: ', err);
         next(err);
-    } finally {
-        prisma.$disconnect();
-    }
+    } 
 };

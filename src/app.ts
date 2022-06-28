@@ -3,9 +3,9 @@ import cors from 'cors';
 import exerciesRouter from './routes/exercises';
 import workoutsRouter from './routes/workouts';
 import errorHandler from './middlewares/errorHandler';
-import { Data } from './controllers/exercises';
 import throwError from './utils/throwError';
 import setsRouter from './routes/sets';
+import { Data } from './lib/interfaces/IData';
 
 const app = express();
 

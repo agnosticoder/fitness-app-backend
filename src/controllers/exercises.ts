@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { Exercise } from './workouts';
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
+import { Data } from '../lib/interfaces/IData';
+import { prisma } from '../lib/getPrismaClient';
 
 export const getAllExercises = async (req: Request, res: Response<Data>) => {
     try {
@@ -11,8 +10,79 @@ export const getAllExercises = async (req: Request, res: Response<Data>) => {
         res.status(200).json({code:200, data: allExercises});
     } catch (err) {
         console.error({ err });
-    } finally {
-        prisma.$disconnect();
+    }
+};
+
+export const getLatestExercise = async (
+    req: Request,
+    res: Response<Data>,
+    next: NextFunction
+) => {
+    try {
+        const { name } = req.params;
+        if (name) {
+            //get latest exercise whose sets isDone is true
+            const exercise = await prisma.exercise.findMany({
+                where: {
+                    name,
+                    isDone: true,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 1,
+                include: {
+                    sets: true,
+                }
+            });
+
+            return res.status(200).json({ code: 200, data: exercise });
+        }
+
+        res.status(400).json({code:400, error: 'Bad request'});
+    } catch (err) {
+        console.log('getLatestExercise error: ', err);
+        next(err);
+    }
+};
+
+export const getLatestExercises = async (
+    req: Request,
+    res: Response<Data>,
+    next: NextFunction
+) => {
+    try {
+        const params = req.params;
+        const names = params.names.split(',');
+        
+        if (names.length > 0) {
+            // get the latest exercise for each name
+            const latestExercises = await Promise.all(
+                names.map(async (name) => {
+                    const exercise = await prisma.exercise.findMany({
+                        where: {
+                            name,
+                            isDone: true,
+                        },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                        take: 1,
+                        include: {
+                            sets: true,
+                        },
+                    });
+                    return exercise[0];
+                })
+            );
+
+            return res.status(200).json({ code: 200, data: latestExercises });
+        }
+
+        res.status(400).json({code:400, error: 'Bad request'});
+    } catch (err) {
+        console.log('getLatestExercises error: ', err);
+        next(err);
     }
 };
 
@@ -34,9 +104,7 @@ export const postExercise = async (req: Request, res: Response<Data>) => {
         return res.status(400).json({code:400, error: 'Exercise name not found'});
     } catch (err) {
         console.error({ err });
-    } finally {
-        prisma.$disconnect();
-    }
+    } 
 };
 
 const Exercises = z.array(Exercise);
@@ -64,23 +132,28 @@ export const createExercises = async (req: Request, res: Response<Data>, next:Ne
     }catch(err){
         console.log('createExercies error: ', err);
         next(err);
-    }finally{
-        prisma.$disconnect();
     }
 };
 
+const DeleteExerciseBody = z.object({
+    exerciseId: z.string(),
+});
 
-export type Data =
-    | { data: any, code: 200} // GET request with data - OK
-    | { data: any, code: 201} //in case of POST - Created
-    | { code: 202 } // in case of PUT - Accepted
-    | { code: 204 } // useful to upadate cache or put request(update an move on) - No Content
-    | { error: string, code: 400 } // malformed request - Bad Request
-    | { error: string, code: 401 } // client must authenticate - Unauthorized
-    | { error: string, code: 403 } // server know the client but content is forbidden (unauthorized) - Forbidden
-    | { error: string, code: 404 } // resource not found - Not Found
-    | { error: string, code: 405 } // does recogonize method but target resource does not support it - Method Not Allowed
-    | { error: string, code: 409 } //in case of put request - Conflict
-    | { error:string, code: 500 } // server error - Internal Server Error
-    | { error: string, code: 501 } //in case of delete request - Not Implemented
-    | { error: string, code: 503 }; //server down for maintenance, user friendly page should be shown - Service Unavailable
+export const deleteExercise = async (
+    req: Request,
+    res: Response<Data>,
+    next: NextFunction
+) => {
+    try {
+        const { exerciseId } = DeleteExerciseBody.parse(req.body);
+
+        const exercise = await prisma.exercise.delete({
+            where: { id: exerciseId },
+        });
+
+        res.status(200).json({code:200, data: exercise});
+    } catch (err) {
+        console.log('deleteExercise error: ', err);
+        next(err);
+    }
+};

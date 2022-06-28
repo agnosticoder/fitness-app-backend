@@ -1,9 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { Data } from '../controllers/exercises';
-
-const prisma = new PrismaClient();
 
 export interface ErrorProps {
     error: string;
@@ -57,8 +53,6 @@ const errorHandler = (err:any, req:Request, res:Response, next:NextFunction) => 
         res.status(500).json({ error: 'Something went wrong from our end, Please try again later', code: 500 });
     } catch (err) {
         console.error(err);
-    } finally {
-        prisma.$disconnect();
     }
 };
 

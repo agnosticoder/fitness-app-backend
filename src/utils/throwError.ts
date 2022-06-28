@@ -1,4 +1,4 @@
-import { Data } from '../controllers/exercises';
+import { Data } from "../lib/interfaces/IData";
 
 const throwError = (err:Data) => {
     throw err;
