@@ -7,6 +7,8 @@ import throwError from './utils/throwError';
 import setsRouter from './routes/sets';
 import { Data } from './lib/interfaces/IData';
 
+const PORT = process.env.PORT || 8000;
+
 const app = express();
 
 /* ------------------------------- Middlewares ------------------------------ */
@@ -33,4 +35,4 @@ app.use(setsRouter);
 /* ------------------------------- Middleware ------------------------------- */
 app.use(errorHandler);
 
-app.listen(8000, () => console.log('yoo go to http://localhost:8000'));
+app.listen(PORT, () => console.log('yoo go to http://localhost:8000'));

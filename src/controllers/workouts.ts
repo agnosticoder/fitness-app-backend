@@ -15,7 +15,7 @@ export const Exercise = z.object({
 
 export const Workout = z.object({
     name: z.string(),
-    exercises: z.array(Exercise),
+    exercises: z.array(Exercise).optional(),
 });
 
 export const getWorkout = async (req: Request, res: Response<Data>) => {
@@ -67,7 +67,7 @@ export const postWorkout = async (
             data: {
                 name: name,
                 exercises: {
-                    create: exercises.map((exercise) => ({
+                    create: exercises?.map((exercise) => ({
                         name: exercise.name,
                         sets: {
                             create: exercise.sets?.map((set) => ({
@@ -179,8 +179,14 @@ export const createWorkoutTemplate = async (req:Request, res:Response<Data>, nex
                 name,
                 isTemplate: true,
                 exercises: {
-                    create: exercises.map((exercise) => ({
+                    create: exercises?.map((exercise) => ({
                         name: exercise.name,
+                        sets: {
+                            create: exercise.sets?.map((set) => ({
+                                reps: set.reps,
+                                weight: set.weight,
+                            })),
+                        },
                     })),
                 },
             },

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./src/app.ts"
+    "postinstall": "tsc",
+    "dev": "nodemon ./src/app.ts",
+    "start": "node ./dist/app.ts"
   },
   "keywords": [],
   "author": "",
