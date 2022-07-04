@@ -35,4 +35,4 @@ app.use(setsRouter);
 /* ------------------------------- Middleware ------------------------------- */
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log('yoo go to http://localhost:8000'));
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
