@@ -178,6 +178,7 @@ export const createWorkoutTemplate = async (req:Request, res:Response<Data>, nex
             data: {
                 name,
                 isTemplate: true,
+                isDone: true,
                 exercises: {
                     create: exercises?.map((exercise) => ({
                         name: exercise.name,
