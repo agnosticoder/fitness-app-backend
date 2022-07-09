@@ -230,9 +230,7 @@ export const saveTemplate = async (
 ) => {
     try {
         const { id, name, exercises } = TemplateWorkout.parse(req.body);
-        console.log('-------------------------------------------------------');
-        console.dir(exercises, { depth: Infinity });
-        console.log('-------------------------------------------------------');
+
         //update or create workout
         const workout = await prisma.workout.update({
             where: { id },
@@ -285,36 +283,6 @@ export const saveTemplate = async (
                 }
             }
         });
-        
-
-        // const workout = await prisma.workout.update({
-        //     where: { id },
-        //     data: {
-        //         name,
-        //         isDone: true,
-        //         isTemplate: true,
-        //         exercises: {
-        //             update: exercises.map((exercise) => ({
-        //                 where: { id: exercise.id },
-        //                 data: {
-        //                     name: exercise.name,
-        //                     sets: {
-        //                         update: exercise.sets.map((set) => ({
-        //                             where: { id: set.id },
-        //                             data: {
-        //                                 reps: set.reps,
-        //                                 weight: set.weight,
-        //                                 setOrder: set.setOrder,
-        //                                 isDone: set.isDone,
-        //                             },
-        //                         })),
-        //                     },
-        //                 },
-        //             })),
-        //         },
-        //     },
-        // });
-
         res.status(200).json({code:200, data: workout});
     } catch (err) {
         console.log('saveTemplate error: ', err);

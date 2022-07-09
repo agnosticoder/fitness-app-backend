@@ -123,6 +123,12 @@ export const createExercises = async (req: Request, res: Response<Data>, next:Ne
                 exercises: {
                     create: exercises.map(exercise => ({
                         name: exercise.name,
+                        sets: {
+                            create: exercise.sets?.map(set => ({
+                                reps: set.reps,
+                                weight: set.weight,
+                            })),
+                        }
                     })),
                 }
             }
