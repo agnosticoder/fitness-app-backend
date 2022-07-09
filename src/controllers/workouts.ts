@@ -204,7 +204,7 @@ const TemplateSet = z.object({
     id: z.string(),
     reps: z.string().optional(),
     weight: z.string().optional(),
-    setOrder: z.string(),
+    setOrder: z.string().optional().nullable(),
     isDone: z.boolean().optional(),
     exerciseId: z.string(),
 });
@@ -213,7 +213,7 @@ const TemplateExercise = z.object({
     id: z.string(),
     name: z.string(),
     workoutId: z.string(),
-    sets: z.array(TemplateSet),
+    sets: z.array(TemplateSet).optional(),
 });
 
 const TemplateWorkout = z.object({
@@ -230,33 +230,90 @@ export const saveTemplate = async (
 ) => {
     try {
         const { id, name, exercises } = TemplateWorkout.parse(req.body);
-
+        console.log('-------------------------------------------------------');
+        console.dir(exercises, { depth: Infinity });
+        console.log('-------------------------------------------------------');
+        //update or create workout
         const workout = await prisma.workout.update({
             where: { id },
             data: {
                 name,
                 isDone: true,
+                isTemplate: true,
                 exercises: {
-                    update: exercises.map((exercise) => ({
+                    deleteMany: {
+                        NOT: exercises.map(({id}) => ({id})),
+                    },
+                    upsert: exercises.map((exercise) => ({
                         where: { id: exercise.id },
-                        data: {
+                        update: {
                             name: exercise.name,
                             sets: {
-                                update: exercise.sets.map((set) => ({
+                                deleteMany: {
+                                    NOT: exercise.sets?.map(({id}) => ({id})),
+                                },
+                                upsert: exercise.sets?.map((set) => ({
                                     where: { id: set.id },
-                                    data: {
+                                    update: {
                                         reps: set.reps,
                                         weight: set.weight,
-                                        setOrder: set.setOrder,
-                                        isDone: set.isDone,
                                     },
+                                    create: {
+                                        reps: set.reps,
+                                        weight: set.weight,
+                                    }
+                                })),
+                            },
+                        },
+                        create: {
+                            name: exercise.name,
+                            sets: {
+                                create: exercise.sets?.map((set) => ({
+                                    reps: set.reps,
+                                    weight: set.weight,
                                 })),
                             },
                         },
                     })),
                 },
             },
+            include: {
+                exercises: {
+                    include: {
+                        sets: true,
+                    }
+                }
+            }
         });
+        
+
+        // const workout = await prisma.workout.update({
+        //     where: { id },
+        //     data: {
+        //         name,
+        //         isDone: true,
+        //         isTemplate: true,
+        //         exercises: {
+        //             update: exercises.map((exercise) => ({
+        //                 where: { id: exercise.id },
+        //                 data: {
+        //                     name: exercise.name,
+        //                     sets: {
+        //                         update: exercise.sets.map((set) => ({
+        //                             where: { id: set.id },
+        //                             data: {
+        //                                 reps: set.reps,
+        //                                 weight: set.weight,
+        //                                 setOrder: set.setOrder,
+        //                                 isDone: set.isDone,
+        //                             },
+        //                         })),
+        //                     },
+        //                 },
+        //             })),
+        //         },
+        //     },
+        // });
 
         res.status(200).json({code:200, data: workout});
     } catch (err) {
