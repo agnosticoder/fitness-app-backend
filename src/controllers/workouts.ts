@@ -138,28 +138,88 @@ export const finishWorkout = async (req:Request, res:Response<Data>, next:NextFu
             data: {
                 name,
                 isDone: true,
+                isTemplate: false,
                 exercises: {
-                    update: exercises.map((exercise) => ({
+                    deleteMany: {
+                        NOT: exercises.map(({id}) => ({id})),
+                    },
+                    upsert: exercises.map((exercise) => ({
                         where: { id: exercise.id },
-                        data: {
+                        update: {
                             name: exercise.name,
                             isDone: true,
                             sets: {
-                                update: exercise.sets.map((set) => ({
+                                deleteMany: {
+                                    NOT: exercise.sets?.map(({id}) => ({id})),
+                                },
+                                upsert: exercise.sets?.map((set) => ({
                                     where: { id: set.id },
-                                    data: {
+                                    update: {
                                         reps: set.reps,
                                         weight: set.weight,
                                         setOrder: set.setOrder,
-                                        isDone: set.isDone,
+                                        isDone: true,
                                     },
+                                    create: {
+                                        reps: set.reps,
+                                        weight: set.weight,
+                                        setOrder: set.setOrder,
+                                        isDone: true,
+                                    }
+                                })),
+                            },
+                        },
+                        create: {
+                            name: exercise.name,
+                            isDone: true,
+                            sets: {
+                                create: exercise.sets?.map((set) => ({
+                                    reps: set.reps,
+                                    weight: set.weight,
+                                    setOrder: set.setOrder,
+                                    isDone: true,
                                 })),
                             },
                         },
                     })),
                 },
             },
+            include: {
+                exercises: {
+                    include: {
+                        sets: true,
+                    }
+                }
+            }
         });
+
+        // const workout = await prisma.workout.update({
+        //     where: { id },
+        //     data: {
+        //         name,
+        //         isDone: true,
+        //         exercises: {
+        //             update: exercises.map((exercise) => ({
+        //                 where: { id: exercise.id },
+        //                 data: {
+        //                     name: exercise.name,
+        //                     isDone: true,
+        //                     sets: {
+        //                         update: exercise.sets.map((set) => ({
+        //                             where: { id: set.id },
+        //                             data: {
+        //                                 reps: set.reps,
+        //                                 weight: set.weight,
+        //                                 setOrder: set.setOrder,
+        //                                 isDone: set.isDone,
+        //                             },
+        //                         })),
+        //                     },
+        //                 },
+        //             })),
+        //         },
+        //     },
+        // });
 
         res.status(200).json({code:200, data: workout});
     }catch(err){
