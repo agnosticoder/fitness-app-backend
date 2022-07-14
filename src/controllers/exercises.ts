@@ -52,9 +52,8 @@ export const getLatestExercises = async (
     next: NextFunction
 ) => {
     try {
-        const params = req.params;
-        const names = params.names.split(',');
-        
+        const names = (req.query.names as string).split(',');
+
         if (names.length > 0) {
             // get the latest exercise for each name
             const latestExercises = await Promise.all(
@@ -72,7 +71,7 @@ export const getLatestExercises = async (
                             sets: true,
                         },
                     });
-                    return exercise[0];
+                    return exercise[0] ?? {name};
                 })
             );
 

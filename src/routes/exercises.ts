@@ -5,7 +5,7 @@ const exerciesRouter = express.Router();
 
 exerciesRouter.get('/exercises', getAllExercises);
 exerciesRouter.get('/exercise/:name', getLatestExercise);
-exerciesRouter.get('/exercises/:names', getLatestExercises);
+exerciesRouter.get('/exercises/latest', getLatestExercises);
 exerciesRouter.post('/exercise', postExercise);
 exerciesRouter.post('/exercises', createExercises);
 exerciesRouter.delete('/exercise', deleteExercise);
