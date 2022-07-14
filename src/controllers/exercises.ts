@@ -71,6 +71,7 @@ export const getLatestExercises = async (
                             sets: true,
                         },
                     });
+                    //send back the latest exercise or name object if no exercise found
                     return exercise[0] ?? {name};
                 })
             );
