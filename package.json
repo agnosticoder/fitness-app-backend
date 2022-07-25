@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "tsc",
+    "postinstall": "tsc && npm run migrate && npm run seed",
     "dev": "nodemon ./src/app.ts",
     "start": "node ./dist/app.js",
     "deploy": "git add . && git commit -m Heroku && git push heroku main"

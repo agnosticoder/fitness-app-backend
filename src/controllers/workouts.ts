@@ -40,18 +40,23 @@ export const getWorkout = async (req: Request, res: Response<Data>) => {
     } 
 };
 
-export const getAllWorkouts = async (req:Request, res:Response<Data>) => {
+export const getAllWorkouts = async (req: Request, res: Response<Data>) => {
     try {
         const allWorkouts = await prisma.workout.findMany({
-            include: { exercises: {
-                include: { sets: true },
-            } },
+            include: {
+                exercises: {
+                    include: { sets: true },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            }
         });
-        res.status(200).json({code:200, data: allWorkouts });
+        res.status(200).json({ code: 200, data: allWorkouts });
         // res.status(400).json({code:400, error: 'Bad request'});
     } catch (err) {
         console.error({ err });
-    } 
+    }
 };
 
 export const postWorkout = async (
