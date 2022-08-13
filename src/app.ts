@@ -46,9 +46,9 @@ app.get('/', async (req: Request, res: Response<Data>, next: NextFunction) => {
 });
 
 app.use(userRouter);
-app.use(hasAuth, exerciesRouter);
-app.use(hasAuth, workoutsRouter);
-app.use(hasAuth, setsRouter);
+app.use(exerciesRouter);
+app.use(workoutsRouter);
+app.use(setsRouter);
 
 /* ------------------------------- Middleware ------------------------------- */
 app.use(errorHandler);
