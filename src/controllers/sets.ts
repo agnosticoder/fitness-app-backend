@@ -9,6 +9,8 @@ const CreatSetBody = z.object({
     weight: z.string().optional(),
 });
 
+export type CreateSetPayload = z.infer<typeof CreatSetBody>;
+
 export const createSet = async (
     req: Request,
     res: Response<Data>,
@@ -42,6 +44,8 @@ export const createSet = async (
 const DeleteSetBody = z.object({
     setId: z.string(),
 });
+
+export type DeleteSetPayload = z.infer<typeof DeleteSetBody>;
 
 export const deleteSet = async (
     req: Request,

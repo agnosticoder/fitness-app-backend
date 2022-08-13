@@ -1,3 +1,5 @@
+// Later channge this to trpc inspired error messages, link is below
+//https://trpc.io/docs/error-handling
 export type Data =
     | { data: any, code: 200} // GET request with data - OK
     | { data: any, code: 201} //in case of POST - Created

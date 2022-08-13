@@ -40,7 +40,19 @@ model Workout {
   name       String
   isDone     Boolean    @default(false)
   isTemplate Boolean    @default(false)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   exercises  Exercise[]
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  workouts  Workout[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

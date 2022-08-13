@@ -113,6 +113,8 @@ const CreateExercisesBody = z.object({
     exercises: Exercises,
 });
 
+export type CreateExercisesPayload = z.infer<typeof CreateExercisesBody>;
+
 export const createExercises = async (req: Request, res: Response<Data>, next:NextFunction) => {
     try{
         const body = CreateExercisesBody.parse(req.body);
@@ -144,6 +146,8 @@ export const createExercises = async (req: Request, res: Response<Data>, next:Ne
 const DeleteExerciseBody = z.object({
     exerciseId: z.string(),
 });
+
+export type DeleteExercisePaload = z.infer<typeof DeleteExerciseBody>;
 
 export const deleteExercise = async (
     req: Request,
