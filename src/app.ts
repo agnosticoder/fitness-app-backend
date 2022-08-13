@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    origin: 'http://satinder.local:3000',
+    origin: process.env.NODE_ENV === 'production' ? 'https://fitness-app-next-frontend.vercel.app/' : 'http://satinder.local:3000',
     optionsSuccessStatus: 200,
     credentials: true,
 }));
