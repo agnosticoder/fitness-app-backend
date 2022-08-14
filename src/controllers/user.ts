@@ -94,8 +94,14 @@ export const getUser = async (
 ) => {
     try {
         if (req.session.user?.id) {
-            const id = req.session.user.id;
-            res.status(200).json({ code: 200, data: id });
+            const user = await prisma.user.findUnique({
+                where: {id: req.session.user.id},
+                select: {
+                    name: true,
+                    email: true,
+                }
+            });
+            res.status(200).json({ code: 200, data: user });
         } else {
             res.status(200).json({ code: 200, data: null });
         }
