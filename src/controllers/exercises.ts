@@ -62,6 +62,9 @@ export const getLatestExercises = async (
                         where: {
                             name,
                             isDone: true,
+                            workout: {
+                                userId: req.session.user?.id,
+                            }
                         },
                         orderBy: {
                             createdAt: 'desc',
