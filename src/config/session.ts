@@ -20,3 +20,7 @@ export const LOGIN_SESS_OPTIONS: IronSessionOptions = {
         maxAge: 1000 * 60 * 60 * 2,
     },
 };
+
+if(IN_PROD){
+    console.log = () => {};
+}
