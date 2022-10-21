@@ -8,7 +8,7 @@
     "postinstall": "tsc",
     "start": "node ./dist/app.js",
     "deploy": "git add . && git commit -m Heroku && git push heroku main",
-    "connect": "pscale connect fitness-resort initial-setup --port 3309",
+    "connect": "pscale connect fitness-resort main --port 3309",
     "dev": "nodemon ./src/app.ts"
   },
   "keywords": [],
@@ -26,7 +26,7 @@
     "prisma": "^4.0.0",
     "ts-node": "^10.7.0",
     "ttab": "^0.7.2",
-    "typescript": "^4.6.3"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
     "@prisma/client": "^3.11.1",
